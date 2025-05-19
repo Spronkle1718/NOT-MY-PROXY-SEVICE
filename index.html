@@ -5,25 +5,14 @@
   <title>Proxy Launcher</title>
   <style>
     :root {
-      --bg-color: #f0f0f0;
-      --text-color: #000;
-      --input-bg: #eaffea;
-      --input-border: #00aa00;
-      --input-text: #006600;
-      --button-bg: white;
-      --button-text: #ff3300;
-      --button-hover: #ffe6e0;
-    }
-
-    body.dark {
-      --bg-color: #121212;
-      --text-color: #ffffff;
-      --input-bg: #1f3321;
-      --input-border: #00ff7f;
-      --input-text: #adff2f;
-      --button-bg: #333;
-      --button-text: #ff6347;
-      --button-hover: #444;
+      --bg-color: #000000; /* Black background */
+      --text-color: #ff0000; /* Bright red text */
+      --input-bg: #330000; /* Dark red input background */
+      --input-border: #990000; /* Bright red border */
+      --input-text: #ff3333; /* Bright red text */
+      --button-bg: #660000; /* Dark red button background */
+      --button-text: #ff6666; /* Bright red button text */
+      --button-hover: #990000; /* Brighter red on hover */
     }
 
     html, body {
@@ -81,7 +70,7 @@
       color: var(--button-text);
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 8px rgba(255, 0, 0, 0.2);
       transition: transform 0.3s ease, background-color 0.3s ease;
     }
 
@@ -89,60 +78,9 @@
       transform: scale(1.08);
       background-color: var(--button-hover);
     }
-
-    .toggle-container {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .toggle-container input[type="checkbox"] {
-      width: 40px;
-      height: 20px;
-      appearance: none;
-      background: #ccc;
-      border-radius: 20px;
-      position: relative;
-      cursor: pointer;
-      outline: none;
-      transition: background 0.3s ease;
-    }
-
-    .toggle-container input[type="checkbox"]:checked {
-      background: #00cc66;
-    }
-
-    .toggle-container input[type="checkbox"]::before {
-      content: '';
-      position: absolute;
-      width: 18px;
-      height: 18px;
-      background: white;
-      border-radius: 50%;
-      top: 1px;
-      left: 1px;
-      transition: transform 0.3s ease;
-    }
-
-    .toggle-container input[type="checkbox"]:checked::before {
-      transform: translateX(20px);
-    }
-
-    .toggle-container label {
-      font-size: 14px;
-      color: var(--text-color);
-    }
   </style>
 </head>
 <body>
-
-  <div class="toggle-container">
-    <label for="darkModeToggle">Dark Mode</label>
-    <input type="checkbox" id="darkModeToggle">
-  </div>
 
   <div class="container">
     <div class="input-container" style="margin-bottom: 40px;">
@@ -158,21 +96,13 @@
   </div>
 
   <script>
-    const toggle = document.getElementById('darkModeToggle');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-    toggle.addEventListener('change', () => {
-      document.body.classList.toggle('dark', toggle.checked);
-      localStorage.setItem('theme', toggle.checked ? 'dark' : 'light');
-    });
-
     const proxies = [
       { name: "Rammerhead", url: "https://www.classroom.google.com.l5.ca" },
-      { name: "interstellar", url: "https://iheart-ip.conyser.cl/" },
+      { name: "Interstellar", url: "https://iheart-ip.conyser.cl/" },
       { name: "CroxyProxy", url: "https://64.227.120.231/" },
       { name: "Shadow", url: "https://spanish.bsfa.info/" },
       { name: "Tinf0il", url: "http://jackslink.comotienda.com/" },
-      { name: "Doge Unbloker", url: "https://iloveip.reconectar.cl/" }
+      { name: "Doge Unblocker", url: "https://iloveip.reconectar.cl/" }
     ];
 
     function populateProxyDropdown() {
@@ -186,38 +116,41 @@
       });
     }
 
-    function filterProxies() {
-      const search = document.getElementById('proxySearch').value.toLowerCase();
-      const select = document.getElementById('proxySelect');
-      select.innerHTML = '';
-      proxies.filter(proxy => proxy.name.toLowerCase().includes(search)).forEach(proxy => {
-        const option = document.createElement('option');
-        option.value = proxy.url;
-        option.textContent = proxy.name;
-        select.appendChild(option);
-      });
-    }
-
     function launchSelectedProxy() {
       const select = document.getElementById('proxySelect');
       const url = select.value;
       if (!url) return;
-      window.open(url, '_blank');
+
+      const newWindow = window.open('about:blank');
+      newWindow.document.write(`
+        <html>
+          <head><title>Home</title></head>
+          <body style="margin:0;padding:0;">
+            <iframe src="${url}" style="border:none;width:100vw;height:100vh;"></iframe>
+          </body>
+        </html>
+      `);
     }
 
     function loadIframe() {
       const input = document.getElementById('urlInput').value.trim();
       if (!input) return;
+
       const url = input.startsWith('http://') || input.startsWith('https://') ? input : 'https://' + input;
-      window.open(url, '_blank');
+      const newWindow = window.open('about:blank');
+
+      newWindow.document.write(`
+        <html>
+          <head><title>Home</title></head>
+          <body style="margin:0;padding:0;">
+            <iframe src="${url}" style="border:none;width:100vw;height:100vh;"></iframe>
+          </body>
+        </html>
+      `);
     }
 
     window.onload = () => {
       populateProxyDropdown();
-      if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && prefersDark)) {
-        document.body.classList.add('dark');
-        document.getElementById('darkModeToggle').checked = true;
-      }
     };
   </script>
 
