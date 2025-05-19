@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Proxy Launcher</title>
+  <style>
+    :root {
+      --bg-color: #f0f0f0;
+      --text-color: #000;
+      --input-bg: #eaffea;
+      --input-border: #00aa00;
+      --input-text: #006600;
+      --button-bg: white;
+      --button-text: #ff3300;
+      --button-hover: #ffe6e0;
+    }
+
+    body.dark {
+      --bg-color: #121212;
+      --text-color: #ffffff;
+      --input-bg: #1f3321;
+      --input-border: #00ff7f;
+      --input-text: #adff2f;
+      --button-bg: #333;
+      --button-text: #ff6347;
+      --button-hover: #444;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      text-align: center;
+      padding: 20px;
+      max-width: 800px;
+      width: 100%;
+    }
+
+    .input-container {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+
+    input[type="text"], select {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 2px solid var(--input-border);
+      background-color: var(--input-bg);
+      color: var(--input-text);
+    }
+
+    input[type="text"] {
+      width: 300px;
+    }
+
+    select {
+      min-width: 200px;
+      max-width: 300px;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      background-color: var(--button-bg);
+      color: var(--button-text);
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    button:hover {
+      transform: scale(1.08);
+      background-color: var(--button-hover);
+    }
+
+    .toggle-container {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toggle-container input[type="checkbox"] {
+      width: 40px;
+      height: 20px;
+      appearance: none;
+      background: #ccc;
+      border-radius: 20px;
+      position: relative;
+      cursor: pointer;
+      outline: none;
+      transition: background 0.3s ease;
+    }
+
+    .toggle-container input[type="checkbox"]:checked {
+      background: #00cc66;
+    }
+
+    .toggle-container input[type="checkbox"]::before {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: white;
+      border-radius: 50%;
+      top: 1px;
+      left: 1px;
+      transition: transform 0.3s ease;
+    }
+
+    .toggle-container input[type="checkbox"]:checked::before {
+      transform: translateX(20px);
+    }
+
+    .toggle-container label {
+      font-size: 14px;
+      color: var(--text-color);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toggle-container">
+    <label for="darkModeToggle">Dark Mode</label>
+    <input type="checkbox" id="darkModeToggle">
+  </div>
+
+  <div class="container">
+    <!-- Proxy search + dropdown + launch button -->
+    <div class="input-container" style="margin-bottom: 40px;">
+      <input type="text" id="proxySearch" placeholder="Search Proxies..." oninput="filterProxies()">
+      <select id="proxySelect"></select>
+      <button onclick="launchSelectedProxy()">Launch Proxy</button>
+    </div>
+
+    <!-- Search bar and button to load URL -->
+    <div class="input-container">
+      <input type="text" id="urlInput" placeholder="Enter a URL (e.g. https://example.com)">
+      <button onclick="loadIframe()">Go</button>
+    </div>
+  </div>
+
+  <script>
+    const toggle = document.getElementById('darkModeToggle');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    toggle.addEventListener('change', () => {
+      document.body.classList.toggle('dark', toggle.checked);
+      localStorage.setItem('theme', toggle.checked ? 'dark' : 'light');
+    });
+
+    const proxies = [
+      { name: "interstellar", url: "https://iheart-ip.conyser.cl/" }
+      { name: "CroxyProxy", url: "https://64.227.120.231/" },
+      { name: "Shadow", url: "https://spanish.bsfa.info/" },
+      { name: "Tinf0il", url: "http://jackslink.comotienda.com/" },
+      { name: "Doge Unbloker", url: "https://iloveip.reconectar.cl/" }
+    ];
+
+    function populateProxyDropdown() {
+      const select = document.getElementById('proxySelect');
+      select.innerHTML = '';
+      proxies.forEach(proxy => {
+        const option = document.createElement('option');
+        option.value = proxy.url;
+        option.textContent = proxy.name;
+        select.appendChild(option);
+      });
+    }
+
+    function filterProxies() {
+      const search = document.getElementById('proxySearch').value.toLowerCase();
+      const select = document.getElementById('proxySelect');
+      select.innerHTML = '';
+      proxies
+        .filter(proxy => proxy.name.toLowerCase().includes(search))
+        .forEach(proxy => {
+          const option = document.createElement('option');
+          option.value = proxy.url;
+          option.textContent = proxy.name;
+          select.appendChild(option);
+        });
+    }
+
+    function launchSelectedProxy() {
+      const select = document.getElementById('proxySelect');
+      const url = select.value;
+      if (!url) return;
+
+      const newTab = window.open('', '_blank');
+      newTab.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head><title>Proxy Site</title></head>
+        <body style="margin:0;padding:0;">
+          <iframe src="${url}" width="100%" height="100%" style="border:none;position:fixed;top:0;left:0;bottom:0;right:0;"></iframe>
+        </body>
+        </html>
+      `);
+      newTab.document.close();
+    }
+
+    function loadIframe() {
+      const input = document.getElementById('urlInput').value.trim();
+      if (!input) return;
+
+      const url = input.startsWith('http://') || input.startsWith('https://') ? input : 'https://' + input;
+      const newTab = window.open('', '_blank');
+      newTab.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head><title>Loading...</title></head>
+        <body style="margin:0;padding:0;">
+          <iframe src="${url}" width="100%" height="100%" style="border:none;position:fixed;top:0;left:0;bottom:0;right:0;"></iframe>
+        </body>
+        </html>
+      `);
+      newTab.document.close();
+    }
+
+    window.onload = () => {
+      populateProxyDropdown();
+      if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && prefersDark)) {
+        document.body.classList.add('dark');
+        toggle.checked = true;
+      }
+    };
+  </script>
+
+</body>
+</html>
