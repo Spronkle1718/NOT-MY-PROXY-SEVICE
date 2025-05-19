@@ -145,14 +145,12 @@
   </div>
 
   <div class="container">
-    <!-- Proxy search + dropdown + launch button -->
     <div class="input-container" style="margin-bottom: 40px;">
       <input type="text" id="proxySearch" placeholder="Search Proxies..." oninput="filterProxies()">
       <select id="proxySelect"></select>
       <button onclick="launchSelectedProxy()">Launch Proxy</button>
     </div>
 
-    <!-- Search bar and button to load URL -->
     <div class="input-container">
       <input type="text" id="urlInput" placeholder="Enter a URL (e.g. https://example.com)">
       <button onclick="loadIframe()">Go</button>
@@ -169,7 +167,8 @@
     });
 
     const proxies = [
-      { name: "interstellar", url: "https://iheart-ip.conyser.cl/" }
+      { name: "Rammerhead", url: "https://www.classroom.google.com.l5.ca" },
+      { name: "interstellar", url: "https://iheart-ip.conyser.cl/" },
       { name: "CroxyProxy", url: "https://64.227.120.231/" },
       { name: "Shadow", url: "https://spanish.bsfa.info/" },
       { name: "Tinf0il", url: "http://jackslink.comotienda.com/" },
@@ -191,57 +190,33 @@
       const search = document.getElementById('proxySearch').value.toLowerCase();
       const select = document.getElementById('proxySelect');
       select.innerHTML = '';
-      proxies
-        .filter(proxy => proxy.name.toLowerCase().includes(search))
-        .forEach(proxy => {
-          const option = document.createElement('option');
-          option.value = proxy.url;
-          option.textContent = proxy.name;
-          select.appendChild(option);
-        });
+      proxies.filter(proxy => proxy.name.toLowerCase().includes(search)).forEach(proxy => {
+        const option = document.createElement('option');
+        option.value = proxy.url;
+        option.textContent = proxy.name;
+        select.appendChild(option);
+      });
     }
 
     function launchSelectedProxy() {
       const select = document.getElementById('proxySelect');
       const url = select.value;
       if (!url) return;
-
-      const newTab = window.open('', '_blank');
-      newTab.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head><title>Proxy Site</title></head>
-        <body style="margin:0;padding:0;">
-          <iframe src="${url}" width="100%" height="100%" style="border:none;position:fixed;top:0;left:0;bottom:0;right:0;"></iframe>
-        </body>
-        </html>
-      `);
-      newTab.document.close();
+      window.open(url, '_blank');
     }
 
     function loadIframe() {
       const input = document.getElementById('urlInput').value.trim();
       if (!input) return;
-
       const url = input.startsWith('http://') || input.startsWith('https://') ? input : 'https://' + input;
-      const newTab = window.open('', '_blank');
-      newTab.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head><title>Loading...</title></head>
-        <body style="margin:0;padding:0;">
-          <iframe src="${url}" width="100%" height="100%" style="border:none;position:fixed;top:0;left:0;bottom:0;right:0;"></iframe>
-        </body>
-        </html>
-      `);
-      newTab.document.close();
+      window.open(url, '_blank');
     }
 
     window.onload = () => {
       populateProxyDropdown();
       if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && prefersDark)) {
         document.body.classList.add('dark');
-        toggle.checked = true;
+        document.getElementById('darkModeToggle').checked = true;
       }
     };
   </script>
